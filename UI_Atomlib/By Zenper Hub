@@ -1,4 +1,4 @@
-		-- init
+-- init
 local player = game.Players.LocalPlayer
 local mouse = player:GetMouse()
 
@@ -14,12 +14,12 @@ local utility = {}
 -- themes
 local objects = {}
 local themes = {
-    Background = Color3.fromRGB(5, 5, 20),
-    Glow = Color3.fromRGB(0, 255, 190),
-    Accent = Color3.fromRGB(0, 2, 57),
-    LightContrast = Color3.fromRGB(0, 0, 0),
-    DarkContrast = Color3.fromRGB(0, 15, 30),
-    TextColor = Color3.fromRGB(0, 255, 255)
+	Background = Color3.fromRGB(24, 24, 24),
+	Glow = Color3.fromRGB(0, 0, 0),
+	Accent = Color3.fromRGB(10, 10, 10),
+	LightContrast = Color3.fromRGB(20, 20, 20),
+	DarkContrast = Color3.fromRGB(14, 14, 14),
+	TextColor = Color3.fromRGB(255, 255, 255)
 }
 
 do
@@ -746,88 +746,79 @@ do
 		return module
 	end
 
-	function section:addToggle(data)
-		local this = {}
-		this.title = data.title or "nil text"
-		this.toggled = data.default or false
-		this.callback = data.callback or function() end
+function section:addToggle(title, default, callback)
+   local toggle = utility:Create("ImageButton", {
+      Name = "Toggle",
+      Parent = self.container,
+      BackgroundTransparency = 1,
+      BorderSizePixel = 0,
+      Size = UDim2.new(1, 0, 0, 30),
+      ZIndex = 2,
+      Image = "rbxassetid://5028857472",
+      ImageColor3 = themes.DarkContrast,
+      ScaleType = Enum.ScaleType.Slice,
+      SliceCenter = Rect.new(2, 2, 298, 298)
+   },{
+      utility:Create("TextLabel", {
+         Name = "Title",
+         AnchorPoint = Vector2.new(0, 0.5),
+         BackgroundTransparency = 1,
+         Position = UDim2.new(0, 10, 0.5, 1),
+         Size = UDim2.new(0.5, 0, 1, 0),
+         ZIndex = 3,
+         Font = Enum.Font.Gotham,
+         Text = title,
+         TextColor3 = themes.TextColor,
+         TextSize = 12,
+         TextTransparency = 0.10000000149012,
+         TextXAlignment = Enum.TextXAlignment.Left
+      }),
+      utility:Create("ImageLabel", {
+         Name = "Button",
+         BackgroundTransparency = 1,
+         BorderSizePixel = 0,
+         Position = UDim2.new(1, -50, 0.5, -8),
+         Size = UDim2.new(0, 40, 0, 16),
+         ZIndex = 2,
+         Image = "rbxassetid://5028857472",
+         ImageColor3 = themes.LightContrast,
+         ScaleType = Enum.ScaleType.Slice,
+         SliceCenter = Rect.new(2, 2, 298, 298)
+      }, {
+         utility:Create("ImageLabel", {
+            Name = "Frame",
+            BackgroundTransparency = 1,
+            Position = UDim2.new(0, 2, 0.5, -6),
+            Size = UDim2.new(1, -22, 1, -4),
+            ZIndex = 2,
+            Image = "rbxassetid://5028857472",
+            ImageColor3 = themes.TextColor,
+            ScaleType = Enum.ScaleType.Slice,
+            SliceCenter = Rect.new(2, 2, 298, 298)
+         })
+      })
+   })
 
-		local toggle = utility:Create("ImageButton", {
-			Name = "Toggle",
-			Parent = self.container,
-			BackgroundTransparency = 1,
-			BorderSizePixel = 0,
-			Size = UDim2.new(1, 0, 0, 30),
-			ZIndex = 2,
-			Image = "rbxassetid://5028857472",
-			ImageColor3 = themes.DarkContrast,
-			ScaleType = Enum.ScaleType.Slice,
-			SliceCenter = Rect.new(2, 2, 298, 298)
-		},{
-			utility:Create("TextLabel", {
-				Name = "Title",
-				AnchorPoint = Vector2.new(0, 0.5),
-				BackgroundTransparency = 1,
-				Position = UDim2.new(0, 10, 0.5, 1),
-				Size = UDim2.new(0.5, 0, 1, 0),
-				ZIndex = 3,
-				Font = Enum.Font.Gotham,
-				Text = this.title,
-				TextColor3 = themes.TextColor,
-				TextSize = 12,
-				TextTransparency = 0.10000000149012,
-				TextXAlignment = Enum.TextXAlignment.Left
-			}),
-			utility:Create("ImageLabel", {
-				Name = "Button",
-				BackgroundTransparency = 1,
-				BorderSizePixel = 0,
-				Position = UDim2.new(1, -50, 0.5, -8),
-				Size = UDim2.new(0, 40, 0, 16),
-				ZIndex = 2,
-				Image = "rbxassetid://5028857472",
-				ImageColor3 = themes.LightContrast,
-				ScaleType = Enum.ScaleType.Slice,
-				SliceCenter = Rect.new(2, 2, 298, 298)
-			}, {
-				utility:Create("ImageLabel", {
-					Name = "Frame",
-					BackgroundTransparency = 1,
-					Position = UDim2.new(0, 2, 0.5, -6),
-					Size = UDim2.new(1, -22, 1, -4),
-					ZIndex = 2,
-					Image = "rbxassetid://5028857472",
-					ImageColor3 = themes.TextColor,
-					ScaleType = Enum.ScaleType.Slice,
-					SliceCenter = Rect.new(2, 2, 298, 298)
-				})
-			})
-		})
-		local module = {Instance = toggle, Options = this}
-		self.modules[#self.modules + 1] = module
-		--self:Resize()
+   table.insert(self.modules, toggle)
+   --self:Resize()
 
-		self:updateToggle(module)
+   local active = default
+   local active = default
+   self:updateToggle(toggle, nil, active)
 
-		function this:Update(dataOptions)
-			-- // Overwriting settings
-            for i,v in pairs(dataOptions) do
-                if (module.Options[i] and i ~= "Update") then
-                    module.Options[i] = tostring(v)
-                end
-			end
+   toggle.MouseButton1Click:Connect(function()
+      active = not active
+      self:updateToggle(toggle, nil, active)
 
-			return section:updateToggle(module)
-		end
+      if callback then
+         callback(active, function(...)
+            self:updateToggle(toggle, ...)
+         end)
+      end
+   end)
 
-		toggle.MouseButton1Click:Connect(function()
-			this.toggled = this.toggled
-			self:updateToggle(module)
-
-			this.callback(this.toggled)
-		end)
-		return module
-	end
+   return toggle
+end
 
 	function section:addTextbox(data)
 		local this = {}
@@ -2289,4 +2280,6 @@ do
 		end
 	end
 end
+
+--getgenv().Venyx = library
 return library
